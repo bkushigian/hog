@@ -30,14 +30,21 @@ FILE='f'
 DIR='d'
 
 class Entry:
+    ''' An Entry represents either a file or a directory and stores information
+    about the file such as the name, contents, hash, type, create date and
+    modified date.
+    '''
     def __init__(self, name, contents = None, sha1 = 0, tp=DIR, 
-                 cdate = -1, mdate = -1):
+                 cdate = -1, mdate = -1, uid = None, gid = None, perms = None):
         self.name = name
         self.contents = contents
         self.sha1 = sha1
         self.type = tp
         self.cdate = cdate
         self.mdate = mdate
+        self.uid = uid
+        self.gid = gid
+        self.perms = perms
 
     def __str__(self):
         return '[{}] {}'.format(self.type, self.name) 
@@ -50,6 +57,7 @@ class Entry:
         return str(self)
 
 class GitDirParser:
+    ''' Creates a time-indexed list of entries'''
     ext_to_ignore = ['swp']
     entries = []
     def __init__(self, mypath):
@@ -78,10 +86,8 @@ class GitDirParser:
                 except:
                     print("Error reading fname: " + fname + '. ' + dirpath, dirnames, fnames)
 
-
-
 class DiffObject:
-    def __init__(self, fst, snd, created, removed, modified, static):
+    def __init__(self, fst, snd):
         '''
             fst: GitDirSnapshot
             snd: GitDirSnapshot
@@ -90,17 +96,55 @@ class DiffObject:
             modified: list of entires that were modified (from fst to snd)
             static: list of entries that were unchanged (from fst to snd)
         '''
-        self.fst = fst
-        self.snd = snd
-        self.created = created
-        self.removed = removed
+        self.fst      = fst
+        self.snd      = snd
+        created  = []
+        removed  = []
+        modified = []
+        static   = []
+
+        if fst == None:
+            for key in snd.entries.keys():
+                created.append(snd.entries[key])
+
+        else:
+            fstkeys = fst.entries.keys()
+            sndkeys = snd.entries.keys()
+            allkeys = set(fstkeys).union(set(sndkeys))
+
+            for key in allkeys:
+                if key not in fstkeys:
+                    # key must be in self.entries and hence created
+                    created.append(snd.entries[key])
+
+                elif key not in sndkeys:
+                    removed.append(fst.entries[key])
+                
+                elif key in sndkeys and key in fstkeys:
+                    new, old = snd.entries[key], fst.entries[key]
+                    if new.type == 'd' and old.type == 'd':
+                        static.append(new)
+
+                    elif new.type == 'f' and old.type == 'f':
+                        if new.sha1 == old.sha1:
+                            static.append(new)
+                        else:
+                            modified.append(new)
+                    else:
+                        modified.append(new)
+
+        self.created  = created
+        self.removed  = removed
         self.modified = modified
-        self.static = static
+        self.static   = static
 
     def print_diff(self, updated_only = True):
         print('+' + '-'*78 + '+')
 
-        s = 'Difference Object: {} -> {}'.format(self.fst.message, self.snd.message)
+        if self.fst and self.snd:
+            s = 'Difference Object: {} -> {}'.format(self.fst.message, self.snd.message)
+        elif self.snd:
+            s = 'Difference Object - New Snapshot: {}'.format(self.snd.message)
         s = '{0: ^78}'.format(s)
 
         print('|' + s + '|')
@@ -123,9 +167,15 @@ class DiffObject:
         print('+' + '-'*78 + '+')
 
 class GitDirSnapshot:
+    '''
+        GitDirSnapshot holds a snapshot of the .git directory
+    '''
     def __init__(self, dir_to_parse, message = ''):
         self.entries = {}
-        self.message = message
+        if message:
+            self.message = message
+        else:
+            self.message = "{}".format(datetime.now().strftime('%m/%d/%y %H:%M:%S'))
         gdp = GitDirParser(dir_to_parse)
         for entry in gdp.entries:
             self.entries[entry.name] = entry
@@ -136,42 +186,6 @@ class GitDirSnapshot:
     def diff(self, other):
         ''' assuming that self is newer than other, calculate the difference
             in the .git directory tree'''
-        mykeys = self.entries.keys()
-        otherkeys = other.entries.keys()
-        allkeys = set(mykeys).union(set(otherkeys))
-
-        created = []
-        removed = []
-        modified = []
-        static  = []
-
-        for key in allkeys:
-
-            if key not in other.entries:
-                # key must be in self.entries and hence created
-                created.append(self.entries[key])
-            
-            elif key in self.entries and key in other.entries:
-
-                this,that = self.entries[key], other.entries[key]
-                if this.type == 'd' and that.type == 'd':
-                    static.append(this)
-
-                elif this.type == 'f' and that.type == 'f':
-                    if this.sha1 == that.sha1:
-                        static.append(this)
-                    else:
-                        modified.append(this)
-                else:
-                    modified.append(this)
-
-            elif key not in self.entries:
-                removed.append(other.entries[key])
-                
-        return DiffObject(other, self, created=created, 
-                                       removed=removed, 
-                                       modified=modified, 
-                                       static=static)
 
     def __str__(self):
         return 'Snapshot[{}]'.format(self.message)
@@ -193,9 +207,14 @@ class GitDirLog:
     def take_snapshot(self, message = ''):
         snap = GitDirSnapshot(self.gitdir, message)
         self.snapshots.append(snap)
-        if self.autodiff and len(self.snapshots) > 1:
-            s1,s2 = self.snapshots[-2:]
-            s2.diff(s1).print_diff()
+        if self.autodiff:
+            if len(self.snapshots) > 1:
+                s1,s2 = self.snapshots[-2:]
+            else:
+                s1, s2 = None, self.snapshots[-1]
+            diff = DiffObject(s1, s2)
+            diff.print_diff()
+
         return snap
     
     def compute_diffs(self):
@@ -204,4 +223,3 @@ class GitDirLog:
             s1, s2 = self.snapshots[i-1], self.snapshots[i]
             diffs.append(s2.diff(s1))
         return diffs
-
