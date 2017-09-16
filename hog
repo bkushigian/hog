@@ -1,0 +1,60 @@
+#!/usr/bin/python3
+from os import getcwd
+from snapshots import GitDirLog
+from sys import argv, exit
+import readline # optional, will allow Up/Down/History in the console
+import code
+
+welcome_msg = '+' + ('-=' * 39) + '+' + '''
+| Hello, and welcome to hog, the higher order Git program. Basically, just feed
+| me a .git directory and tell me when to take a snapshot (by entering `snap()`
+| into the REPL below) and I'll tell you what's happened to the .git directory.
+| 
+| Yup, that's about it. Enjoy!
+| 
+| Oh! One other thing... If you call me _from_ a .git directory you don't need
+| to give me any arguments, I'll just figure it out. Also, if you call me on a
+| non .git directory and call snap() I may try to read and track your entire
+| hard drive. So don't do that. That would be dumb.
+|
+| ...Now that I'm thinking about it, this might be a bug...
+|
+| Anyways, you've been WARNED!
+|
+| Oh, and one last thing. You have a full fledged Python REPL below, which
+| means you can do whatever you want. Feel free to explore by looking at
+| the code and checking things out. Alright, bye for now...
+''' + '+' + ('-=' * 39) + '+' '\n'
+
+def usage():
+    '''Usage:
+        hog [<git-directory>]
+
+        If no directory is provided, track the directory that you are currently
+        in. Otherwise, track the directory provided as an argument.
+    '''
+def main():
+    print(welcome_msg)
+    gitdir = getcwd()
+    if len(argv) == 2:
+        gitdir = argv[1]
+    elif len(argv) > 2:
+        usage()
+        exit(1)
+    print("Inspecting directory " + gitdir)
+
+    log = GitDirLog(gitdir)
+    repl(log)
+
+def repl(log):
+    def snap(m = ''):
+        log.take_snapshot(m)
+    def helpme():
+        print("Help:\n  To take a snapshot, just enter 'snap(<msg>)', where <msg> is an optional message")
+    vars = globals().copy()
+    vars.update(locals())
+    shell = code.InteractiveConsole(vars)
+    shell.interact()
+
+if __name__ == '__main__':
+    main()
