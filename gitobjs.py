@@ -1,6 +1,17 @@
+from snapshots import GitDirSnapshot
+
+
 ZEROBYTES    = bytes('\x00'.encode('utf-8'))
 NEWLINEBYTES = bytes('\n'.encode('utf-8'))
 SPACEBYTES   = bytes(' '.encode('utf-8'))
+
+class GitDir:
+    '''
+        This should take a parsed git directory and extract the relevant info,
+        wrapping the content in the semantics of the Git dir
+    '''
+    def __init__(self, parsed):
+        pass
 
 class GitIndex:
     def __init__(self, index):
@@ -11,37 +22,85 @@ class GitIndex:
         self.magic_number = index[0:4]
         self.version = self.bytes_to_int(index[5:8])
         self.filecount = self.bytes_to_int(index[9:12])
+        self.cached_tree_entries = []
         self.indexEntries = []
         xs = index[12:]
         while xs:
             xs.strip(ZEROBYTES)
             if xs.startswith('TREE'.encode('utf-8')):
-                cached_tree_entries, xs = self.read_cached_tree(xs)
+                self.cached_tree_entries, xs = self.read_tree_extension(xs)
                 break
             else:
                 entry, xs = self.read_index_entry(xs)
 
 
-    def read_cached_tree(self, bs):
-        # XXX: Only reads one entry right now
+    def read_tree_extension(self, bs):
+        print("Reading tree extension")
         if not bs.startswith("TREE".encode('utf-8')):
+            print("Not a valid cached-tree extension")
             return (None, bs)
         xs = bs[4:]
-        print(xs)
+        xs.strip(ZEROBYTES)
+        trees = []
+        t,xs = self.read_cached_tree(xs)
+        if t == None:
+            return trees, xs # This should throw an error...
+        while xs:
+            t,xs = self.read_cached_tree(xs)
+            if t == None:
+                break
+            trees.append(t)
+        return (trees, xs)
+
+    def read_cached_tree(self, bs):
+        print("Reading a cached tree")
+        result = {}
+        # First, clear zeros from left
+        xs = bs
         xs = xs.strip(ZEROBYTES)
-        print(xs)
+
         path_comp, xs = self.read_bytes_til_nul(xs)
+        xs.strip(ZEROBYTES)
+
         entries_in_index, xs = self.read_bytes_til(xs, delim=SPACEBYTES)
         xs = xs[1:] # pass the space
+
         number_of_subtrees, xs = self.read_bytes_til(xs, delim=NEWLINEBYTES)
         xs = xs[1:] # pass the newline
-        sha1 = ''.join(['{:02x}'.format(c) for c in xs[:40]])
-        print('TREE', 'path_comp:', path_comp, 
-            '\nentries_in_index:', entries_in_index, '\nnumber_of_subtrees:',number_of_subtrees, 
-            '\nsha1:', sha1)
 
-        return None, xs
+        objname = ''.join(['{:02x}'.format(c) for c in xs[:20]])
+        xs = xs[20:]
+        xs = xs.strip(ZEROBYTES)
 
+        if path_comp is None or entries_in_index is None or number_of_subtrees is None:
+            return (None, bs)
+        result['path comp'] = str(path_comp)
+        result['entries in index'] = str(entries_in_index)
+        result['number of subtrees'] = str(number_of_subtrees)
+        result['object-name'] = str(objname)
+
+        self.print_cached_tree(result)
+
+        return result, xs
+
+    def print_cached_tree(self, tree):
+        print('+' + '-'*78 + '+')
+        s = 'Cached Tree'
+        s = '{0: ^78}'.format(s)
+        print(s)
+        print('+' + '-'*78 + '+')
+        fields = [
+            'path comp',
+            'entries in index',
+            'number of subtrees',
+            'object-name',
+        ]
+
+        for key in fields:
+            print('| {:20}'.format(key + ':') + tree[key])
+
+        print('+' + ('-'*78) + '+')
+        print()
 
     def read_index_entry(self, bs):
         xs = bs
@@ -60,18 +119,49 @@ class GitIndex:
             ('sha1', 20),
             ('flags', 2),
         ]
+
         for (key, size) in fields:
             entry[key] = hex(self.bytes_to_int(xs[:size]))
             xs = xs[size:]
 
         name = xs[:xs.find(0)]
         xs = xs[xs.find(0):]
-        entry['name'] = name
-        print("ENTRY:" + str(entry))
-        print()
-        xs = self.strip_zeros_from_bytes(xs)
+        entry['name'] = str(name)
+
         self.indexEntries.append(entry) # Just a dictionary for now
+        self.print_index_entry(entry)
+
+        xs = self.strip_zeros_from_bytes(xs)
         return (entry, xs)
+        
+    def print_index_entry(self, entry):
+        fields = [
+            'name',
+            'ctime-sec',
+            'ctime-nano',
+            'mtime-sec',
+            'mtime-nano',
+            'dev',
+            'ino',
+            'mode',
+            'uid',
+            'gid',
+            'file size',
+            'sha1',
+            'flags',
+        ]
+        print('+' + '-'*78 + '+')
+        s = 'Index Entry'
+        s = '{0: ^78}'.format(s)
+        print('|' + s + '|')
+        print('+' + '-'*78 + '+')
+
+        for key in fields:
+            print('| {:11}:'.format(key) + entry[key])
+
+        print('+' + ('-'*78) + '+')
+        print()
+
         
     def bytes_to_int(self, bs):
         result = 0
