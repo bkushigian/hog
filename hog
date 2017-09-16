@@ -26,6 +26,21 @@ welcome_msg = '+' + ('-=' * 39) + '+' + '''
 | the code and checking things out. Alright, bye for now...
 ''' + '+' + ('-=' * 39) + '+' '\n'
 
+help_msg = ('-=' * 40) + '''
+                                   Help Menu
+snap(msg='', verbose=True): Take a snapshot of the .git repository. You can add
+        an optional message or set verbose=False to supress printing to stdout.
+        This second option is particularly useful if you are taking a snapshot
+        of a large repository.
+
+print_diffs(start=0, end=-1): Print the difference objects that you've tracked
+        so far. You can choose to start on the nth difference object by setting 
+        start=n, and likewise cut off our printing by choosing end=m. In
+        particular, you can enter print_diffs(start=-3,end=-1) to print the last
+        two items, print_diffs(start=5, end=7) to print items 5 and 6, etc.
+
+helpme(): Print this help screen.
+''' + ('-=' * 40) 
 def usage():
     '''Usage:
         hog [<git-directory>]
@@ -49,8 +64,10 @@ def main():
 def repl(log):
     def snap(m = '', verbose=True):
         log.take_snapshot(m, verbose)
+    def print_diffs(start = 0, end = -1):
+        log.print_diffs(start, end)
     def helpme():
-        print("Help:\n  To take a snapshot, just enter 'snap(<msg>)', where <msg> is an optional message")
+        print(help_msg)
     vars = globals().copy()
     vars.update(locals())
     shell = code.InteractiveConsole(vars)
