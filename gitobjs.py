@@ -1,6 +1,3 @@
-from snapshots import GitDirSnapshot
-
-
 ZEROBYTES    = bytes('\x00'.encode('utf-8'))
 NEWLINEBYTES = bytes('\n'.encode('utf-8'))
 SPACEBYTES   = bytes(' '.encode('utf-8'))

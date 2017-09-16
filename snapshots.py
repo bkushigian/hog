@@ -25,6 +25,7 @@ from os import walk
 from os import path
 from datetime import datetime
 import hashlib
+from gitobjs import GitIndex
 
 FILE='f'
 DIR='d'
@@ -62,6 +63,7 @@ class GitDirParser:
     entries = []
     def __init__(self, mypath):
         self.path  = mypath
+        self.index = None
         for (dirpath, dirnames, fnames) in walk(mypath):
             for d in dirnames:
                 dname = dirpath + '/' + d
@@ -75,7 +77,12 @@ class GitDirParser:
                 fname = path.join(dirpath, f)
                 try:
                     with open(fname, 'rb') as afile:
-                        contents = str(afile.read()).encode('utf-8')
+                        contents = afile.read()
+                        if fname.endswith('.git/index'):
+                            self.index = GitIndex(contents)
+                        contents = str(contents).encode('utf-8')
+
+
                     sha1hasher = hashlib.sha1()
                     sha1hasher.update(contents)
                     sha1 = sha1hasher.hexdigest()
@@ -83,8 +90,9 @@ class GitDirParser:
                     mdt = str(datetime.fromtimestamp(path.getmtime(fname)))
                     self.entries.append(Entry(fname, contents, sha1, tp=FILE,
                             cdate=cdt, mdate=mdt))
-                except:
+                except Exception as e:
                     print("Error reading fname: " + fname + '. ' + dirpath, dirnames, fnames)
+                    print(e)
 
 class DiffObject:
     def __init__(self, fst, snd):
@@ -168,7 +176,9 @@ class DiffObject:
 
 class GitDirSnapshot:
     '''
-        GitDirSnapshot holds a snapshot of the .git directory
+        GitDirSnapshot holds a snapshot of the .git directory. This is the raw
+        content and has little semantic meaning without being processed by a
+        GitDir instance
     '''
     def __init__(self, dir_to_parse, message = ''):
         self.entries = {}
@@ -203,8 +213,12 @@ class GitDirLog:
         self.snapshots = []
         self.gitdir = gitdir
         self.autodiff = autodiff
+        self.diffs = None # Default, we don't store diffs
 
-    def take_snapshot(self, message = ''):
+        if autodiff:
+            self.diffs = []
+
+    def take_snapshot(self, message = '', verbose = True):
         snap = GitDirSnapshot(self.gitdir, message)
         self.snapshots.append(snap)
         if self.autodiff:
@@ -213,7 +227,9 @@ class GitDirLog:
             else:
                 s1, s2 = None, self.snapshots[-1]
             diff = DiffObject(s1, s2)
-            diff.print_diff()
+            self.diffs.append(diff)
+            if verbose:
+                diff.print_diff()
 
         return snap
     
@@ -221,5 +237,5 @@ class GitDirLog:
         diffs = []
         for i in range(1, len(self.snapshots)):
             s1, s2 = self.snapshots[i-1], self.snapshots[i]
-            diffs.append(s2.diff(s1))
+            diffs.append(DiffObject(s1, s2))
         return diffs
