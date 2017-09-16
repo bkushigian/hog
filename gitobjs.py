@@ -11,7 +11,7 @@ class GitDir:
         pass
 
 class GitIndex:
-    def __init__(self, index):
+    def __init__(self, index, verbose=True):
         '''
             parse an index file
         '''
@@ -25,32 +25,35 @@ class GitIndex:
         while xs:
             xs.strip(ZEROBYTES)
             if xs.startswith('TREE'.encode('utf-8')):
-                self.cached_tree_entries, xs = self.read_tree_extension(xs)
+                self.cached_tree_entries, xs = self.read_tree_extension(xs, verbose)
                 break
             else:
-                entry, xs = self.read_index_entry(xs)
+                entry, xs = self.read_index_entry(xs, verbose)
 
 
-    def read_tree_extension(self, bs):
-        print("Reading tree extension")
+    def read_tree_extension(self, bs, verbose = True):
+        if verbose:
+            print("Reading tree extension")
         if not bs.startswith("TREE".encode('utf-8')):
-            print("Not a valid cached-tree extension")
+            if verbose:
+                print("Not a valid cached-tree extension")
             return (None, bs)
         xs = bs[4:]
         xs.strip(ZEROBYTES)
         trees = []
-        t,xs = self.read_cached_tree(xs)
+        t,xs = self.read_cached_tree(xs, verbose)
         if t == None:
             return trees, xs # This should throw an error...
         while xs:
-            t,xs = self.read_cached_tree(xs)
+            t,xs = self.read_cached_tree(xs, verbose)
             if t == None:
                 break
             trees.append(t)
         return (trees, xs)
 
-    def read_cached_tree(self, bs):
-        print("Reading a cached tree")
+    def read_cached_tree(self, bs, verbose=True):
+        if verbose:
+            print("Reading a cached tree")
         result = {}
         # First, clear zeros from left
         xs = bs
@@ -76,7 +79,8 @@ class GitIndex:
         result['number of subtrees'] = str(number_of_subtrees)
         result['object-name'] = str(objname)
 
-        self.print_cached_tree(result)
+        if verbose:
+            self.print_cached_tree(result)
 
         return result, xs
 
@@ -99,7 +103,7 @@ class GitIndex:
         print('+' + ('-'*78) + '+')
         print()
 
-    def read_index_entry(self, bs):
+    def read_index_entry(self, bs, verbose = True):
         xs = bs
         entry = {}
         fields = [
@@ -126,7 +130,8 @@ class GitIndex:
         entry['name'] = str(name)
 
         self.indexEntries.append(entry) # Just a dictionary for now
-        self.print_index_entry(entry)
+        if verbose:
+            self.print_index_entry(entry)
 
         xs = self.strip_zeros_from_bytes(xs)
         return (entry, xs)
@@ -191,5 +196,6 @@ def main():
     with open('.git/index', 'rb') as afile:
         stuff = afile.read()
     index = GitIndex(stuff)
+
 if __name__ == '__main__':
     main()

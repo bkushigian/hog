@@ -47,8 +47,8 @@ def main():
     repl(log)
 
 def repl(log):
-    def snap(m = ''):
-        log.take_snapshot(m)
+    def snap(m = '', verbose=True):
+        log.take_snapshot(m, verbose)
     def helpme():
         print("Help:\n  To take a snapshot, just enter 'snap(<msg>)', where <msg> is an optional message")
     vars = globals().copy()

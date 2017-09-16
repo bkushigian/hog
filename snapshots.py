@@ -61,7 +61,7 @@ class GitDirParser:
     ''' Creates a time-indexed list of entries'''
     ext_to_ignore = ['swp']
     entries = []
-    def __init__(self, mypath):
+    def __init__(self, mypath, verbose=True):
         self.path  = mypath
         self.index = None
         for (dirpath, dirnames, fnames) in walk(mypath):
@@ -79,7 +79,7 @@ class GitDirParser:
                     with open(fname, 'rb') as afile:
                         contents = afile.read()
                         if fname.endswith('.git/index'):
-                            self.index = GitIndex(contents)
+                            self.index = GitIndex(contents,verbose)
                         contents = str(contents).encode('utf-8')
 
 
@@ -180,13 +180,13 @@ class GitDirSnapshot:
         content and has little semantic meaning without being processed by a
         GitDir instance
     '''
-    def __init__(self, dir_to_parse, message = ''):
+    def __init__(self, dir_to_parse, message = '', verbose=True):
         self.entries = {}
         if message:
             self.message = message
         else:
             self.message = "{}".format(datetime.now().strftime('%m/%d/%y %H:%M:%S'))
-        gdp = GitDirParser(dir_to_parse)
+        gdp = GitDirParser(dir_to_parse, verbose)
         for entry in gdp.entries:
             self.entries[entry.name] = entry
 
@@ -219,7 +219,7 @@ class GitDirLog:
             self.diffs = []
 
     def take_snapshot(self, message = '', verbose = True):
-        snap = GitDirSnapshot(self.gitdir, message)
+        snap = GitDirSnapshot(self.gitdir, message, verbose)
         self.snapshots.append(snap)
         if self.autodiff:
             if len(self.snapshots) > 1:
