@@ -235,7 +235,17 @@ class GitDirLog:
     
     def compute_diffs(self):
         diffs = []
+        if len(self.snapshots) > 0:
+            s1, s2 = None, self.snapshots[-1]
+            diffs = [DiffObject(s1, s2)] # Seed initial diff
         for i in range(1, len(self.snapshots)):
             s1, s2 = self.snapshots[i-1], self.snapshots[i]
             diffs.append(DiffObject(s1, s2))
         return diffs
+    
+    def print_diffs(self, start=0, end = -1):
+        print("-=" * 40)
+        print("|                         Printing Difference Objects                          |")
+        print("-=" * 40)
+        for diff in self.compute_diffs()[start:end]:
+            diff.print_diff()
