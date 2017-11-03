@@ -77,7 +77,7 @@ class GitDirParser:
                 cdt = str(datetime.fromtimestamp(path.getctime(dname)))
                 mdt = str(datetime.fromtimestamp(path.getmtime(dname)))
                 self.entries.append(Entry(dname, contents=None, sha1=0, tp=DIR,
-                                      cdate = cdt, mdate = mdt))
+                                          cdate=cdt, mdate=mdt))
             for f in fnames:
                 fname = path.join(dirpath, f)
                 try:
@@ -94,7 +94,7 @@ class GitDirParser:
                     cdt = str(datetime.fromtimestamp(path.getctime(fname)))
                     mdt = str(datetime.fromtimestamp(path.getmtime(fname)))
                     self.entries.append(Entry(fname, contents, sha1, tp=FILE,
-                            cdate=cdt, mdate=mdt))
+                                              cdate=cdt, mdate=mdt))
                 except Exception as e:
                     print("Error reading fname: " + fname + '. ' + dirpath, dirnames, fnames)
                     print(e)
