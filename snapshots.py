@@ -67,6 +67,8 @@ class GitDirParser:
     def __init__(self, mypath, verbose=True):
         self.path = mypath
         self.index = None
+        if '.git' not in mypath:
+            raise RuntimeError("Not a .git repository: " + mypath)
         for (dirpath, dirnames, fnames) in walk(mypath):
             for d in dirnames:
                 dname = dirpath + '/' + d
