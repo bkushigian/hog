@@ -10,6 +10,21 @@ class GitDir:
     def __init__(self, parsed):
         pass
 
+class GitBranch:
+    '''GitBranch represents a branch in Git.'''
+    pass
+
+class GitCommitObj:
+    '''Represents a commit'''
+    pass
+
+class Git_COMMIT_EDITMSG:
+    pass
+
+class GitHead:
+    '''GitHead represents the HEAD ref'''
+    pass
+
 class GitIndex:
     def __init__(self, index, verbose=True):
         '''
@@ -191,6 +206,16 @@ class GitIndex:
         if i < 1:
             return None, xs
         return xs[:i], xs[i:]
+
+class GitObjects:
+    pass
+
+class GitRef:
+    pass
+
+class GitTree:
+    '''Represents a tree object'''
+    pass
 
 def main():
     with open('.git/index', 'rb') as afile:
