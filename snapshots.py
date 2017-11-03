@@ -36,7 +36,7 @@ class Entry:
     modified date.
     '''
     def __init__(self, name, contents = None, sha1 = 0, tp=DIR, 
-                 cdate = -1, mdate = -1, uid = None, gid = None, perms = None):
+                 cdate = None, mdate = None, uid = None, gid = None, perms = None):
         self.name = name
         self.contents = contents
         self.sha1 = sha1
