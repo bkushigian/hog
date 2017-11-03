@@ -72,8 +72,6 @@ class GitDirParser:
         for (dirpath, dirnames, fnames) in walk(mypath):
             for d in dirnames:
                 dname = dirpath + '/' + d
-                contents = None
-                sha1 = 0
                 cdt = str(datetime.fromtimestamp(path.getctime(dname)))
                 mdt = str(datetime.fromtimestamp(path.getmtime(dname)))
                 self.entries.append(Entry(dname, contents=None, sha1=0, tp=DIR,
