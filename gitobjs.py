@@ -7,11 +7,11 @@ NEWLINEBYTES = bytes('\n'.encode('utf-8'))
 SPACEBYTES   = bytes(' '.encode('utf-8'))
 
 class GitDir:
-    '''
+    """
         This should take a parsed git directory and extract the relevant info,
         wrapping the content in the semantics of the Git dir. This represents a moment
         in time and stores the data in a snapshot.
-    '''
+    """
     def __init__(self, parsed):
         self.branches = None
         self.COMMIT_EDITMSG = None
@@ -26,25 +26,25 @@ class GitDir:
         self.refs = None
 
 class GitBranch:
-    '''GitBranch represents a branch in Git.'''
+    """GitBranch represents a branch in Git."""
     pass
 
 class GitCommitObj:
-    '''Represents a commit'''
+    """Represents a commit"""
     pass
 
 class Git_COMMIT_EDITMSG:
     pass
 
 class GitHead:
-    '''GitHead represents the HEAD ref'''
+    """GitHead represents the HEAD ref"""
     pass
 
 class GitIndex:
     def __init__(self, index, verbose=True):
-        '''
+        """
             parse an index file
-        '''
+        """
         self.contents = index
         self.magic_number = index[0:4]
         self.version = self.bytes_to_int(index[5:8])
@@ -229,7 +229,7 @@ class GitRef:
     pass
 
 class GitTree:
-    '''Represents a tree object'''
+    """Represents a tree object"""
     pass
 
 def main():
