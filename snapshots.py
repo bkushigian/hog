@@ -65,7 +65,7 @@ class GitDirParser:
     ext_to_ignore = ['swp']
     entries = []
     def __init__(self, mypath, verbose=True):
-        self.path  = mypath
+        self.path = mypath
         self.index = None
         for (dirpath, dirnames, fnames) in walk(mypath):
             for d in dirnames:
