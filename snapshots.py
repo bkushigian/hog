@@ -47,11 +47,14 @@ class Entry:
         self.gid = gid
         self.perms = perms
 
+        idx = name.index('.git')
+        self.short_name = name[idx:]
+
     def __str__(self):
-        return '[{}] {}'.format(self.type, self.name) 
+        return '[{}] {}'.format(self.type, self.short_name)
 
     def long_string(self):
-        return '[{}] {} : {} : {}'.format(self.type, self.name, self.sha1, 
+        return '[{}] {} : {} : {}'.format(self.type, self.short_name, self.sha1,
                                     self.cdate, self.mdate) 
         
     def __repr__(self):
