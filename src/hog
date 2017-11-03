@@ -1,9 +1,9 @@
 #!/usr/bin/python3
-from os import getcwd
-from snapshots import GitDirLog
-from sys import argv, exit
-import readline # optional, will allow Up/Down/History in the console
 import code
+from os import getcwd
+from sys import argv, exit
+
+from snapshots import GitDirLog
 
 welcome_msg = '+' + ('-=' * 39) + '+' + """
 | Hello, and welcome to hog, the higher order Git program. Basically, just feed

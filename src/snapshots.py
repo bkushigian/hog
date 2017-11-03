@@ -21,11 +21,12 @@
     Note that this will return the snapshot object
 
 """
-from os import walk
-from os import path
-from datetime import datetime
 import hashlib
-from gitobjs import GitIndex
+from datetime import datetime
+from os import path
+from os import walk
+
+from git.gitobjs import GitIndex
 
 FILE = 'f'
 DIR = 'd'
