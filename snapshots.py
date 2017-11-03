@@ -114,7 +114,7 @@ class DiffObject:
         modified = []
         static   = []
 
-        if fst == None:
+        if fst is None:
             for key in snd.entries.keys():
                 created.append(snd.entries[key])
 
