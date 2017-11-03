@@ -9,10 +9,21 @@ SPACEBYTES   = bytes(' '.encode('utf-8'))
 class GitDir:
     '''
         This should take a parsed git directory and extract the relevant info,
-        wrapping the content in the semantics of the Git dir
+        wrapping the content in the semantics of the Git dir. This represents a moment
+        in time and stores the data in a snapshot.
     '''
     def __init__(self, parsed):
-        pass
+        self.branches = None
+        self.COMMIT_EDITMSG = None
+        self.config = None
+        self.description = None
+        self.HEAD = None
+        self.hooks = None
+        self.index = None
+        self.info = None
+        self.logs = None
+        self.objects = None
+        self.refs = None
 
 class GitBranch:
     '''GitBranch represents a branch in Git.'''
