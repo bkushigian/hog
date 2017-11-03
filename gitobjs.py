@@ -2,18 +2,21 @@
     gitobjs.py represents Git atomics - commits, HEAD, index, etc.
 """
 
+import utils.filesystem as fs
+
 ZEROBYTES    = bytes('\x00'.encode('utf-8'))
 NEWLINEBYTES = bytes('\n'.encode('utf-8'))
 SPACEBYTES   = bytes(' '.encode('utf-8'))
 
 
-class GitDir:
+class GitDir(fs.Directory):
     """
         This should take a parsed git directory and extract the relevant info,
         wrapping the content in the semantics of the Git dir. This represents a moment
         in time and stores the data in a snapshot.
     """
     def __init__(self, parsed):
+        super().__init__('.git', [], [], None)
         self.branches = None
         self.COMMIT_EDITMSG = None
         self.config = None
