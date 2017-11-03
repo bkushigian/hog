@@ -6,6 +6,7 @@ ZEROBYTES    = bytes('\x00'.encode('utf-8'))
 NEWLINEBYTES = bytes('\n'.encode('utf-8'))
 SPACEBYTES   = bytes(' '.encode('utf-8'))
 
+
 class GitDir:
     """
         This should take a parsed git directory and extract the relevant info,
@@ -25,20 +26,25 @@ class GitDir:
         self.objects = None
         self.refs = None
 
+
 class GitBranch:
     """GitBranch represents a branch in Git."""
     pass
+
 
 class GitCommitObj:
     """Represents a commit"""
     pass
 
+
 class Git_COMMIT_EDITMSG:
     pass
+
 
 class GitHead:
     """GitHead represents the HEAD ref"""
     pass
+
 
 class GitIndex:
     def __init__(self, index, verbose=True):
@@ -59,7 +65,6 @@ class GitIndex:
                 break
             else:
                 entry, xs = self.read_index_entry(xs, verbose)
-
 
     def read_tree_extension(self, bs, verbose = True):
         if verbose:
@@ -194,7 +199,6 @@ class GitIndex:
         print('+' + ('-'*78) + '+')
         print()
 
-        
     def bytes_to_int(self, bs):
         result = 0
         for b in bs:
@@ -222,15 +226,19 @@ class GitIndex:
             return None, xs
         return xs[:i], xs[i:]
 
+
 class GitObjects:
     pass
+
 
 class GitRef:
     pass
 
+
 class GitTree:
     """Represents a tree object"""
     pass
+
 
 def main():
     with open('.git/index', 'rb') as afile:
