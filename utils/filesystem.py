@@ -4,6 +4,7 @@ filesystem.py represents files and directories
 
 import os
 
+
 class File:
     """ A file in the file system """
     def __init__(self, name, contents='', parent=None):
