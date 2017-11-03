@@ -5,7 +5,7 @@ from sys import argv, exit
 import readline # optional, will allow Up/Down/History in the console
 import code
 
-welcome_msg = '+' + ('-=' * 39) + '+' + '''
+welcome_msg = '+' + ('-=' * 39) + '+' + """
 | Hello, and welcome to hog, the higher order Git program. Basically, just feed
 | me a .git directory and tell me when to take a snapshot (by entering `snap()`
 | into the REPL below) and I'll tell you what's happened to the .git directory.
@@ -24,9 +24,9 @@ welcome_msg = '+' + ('-=' * 39) + '+' + '''
 | Oh, and one last thing. You have a full fledged Python REPL below, which
 | means you can do whatever you want. Feel free to explore by looking at
 | the code and checking things out. Alright, bye for now...
-''' + '+' + ('-=' * 39) + '+' '\n'
+""" + '+' + ('-=' * 39) + '+' '\n'
 
-help_msg = ('-=' * 40) + '''
+help_msg = ('-=' * 40) + """
                                    Help Menu
 snap(msg='', verbose=True): Take a snapshot of the .git repository. You can add
         an optional message or set verbose=False to supress printing to stdout.
@@ -40,14 +40,18 @@ print_diffs(start=0, end=-1): Print the difference objects that you've tracked
         two items, print_diffs(start=5, end=7) to print items 5 and 6, etc.
 
 helpme(): Print this help screen.
-''' + ('-=' * 40) 
+""" + ('-=' * 40)
+
+
 def usage():
-    '''Usage:
+    """ Usage:
         hog [<git-directory>]
 
         If no directory is provided, track the directory that you are currently
         in. Otherwise, track the directory provided as an argument.
-    '''
+    """
+
+
 def main():
     print(welcome_msg)
     gitdir = getcwd()
