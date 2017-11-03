@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-''' snapshots.py: How to use this file:
+""" snapshots.py: How to use this file:
     this is a basic git directory tracker (super low functionality). What does
     it do? First, create a GitDirLog with
 
@@ -20,23 +20,24 @@
 
     Note that this will return the snapshot object
 
-'''
+"""
 from os import walk
 from os import path
 from datetime import datetime
 import hashlib
 from gitobjs import GitIndex
 
-FILE='f'
-DIR='d'
+FILE = 'f'
+DIR = 'd'
+
 
 class Entry:
-    ''' An Entry represents either a file or a directory and stores information
+    """ An Entry represents either a file or a directory and stores information
     about the file such as the name, contents, hash, type, create date and
     modified date.
-    '''
-    def __init__(self, name, contents = None, sha1 = 0, tp=DIR, 
-                 cdate = None, mdate = None, uid = None, gid = None, perms = None):
+    """
+    def __init__(self, name, contents=None, sha1=0, tp=DIR,
+                 cdate=None, mdate=None, uid=None, gid=None, perms=None):
         self.name = name
         self.contents = contents
         self.sha1 = sha1
@@ -60,10 +61,12 @@ class Entry:
     def __repr__(self):
         return str(self)
 
+
 class GitDirParser:
-    ''' Creates a time-indexed list of entries'''
+    """ Creates a time-indexed list of entries"""
     ext_to_ignore = ['swp']
     entries = []
+
     def __init__(self, mypath, verbose=True):
         self.path = mypath
         self.index = None
@@ -85,7 +88,6 @@ class GitDirParser:
                             self.index = GitIndex(contents,verbose)
                         contents = str(contents).encode('utf-8')
 
-
                     sha1hasher = hashlib.sha1()
                     sha1hasher.update(contents)
                     sha1 = sha1hasher.hexdigest()
@@ -97,18 +99,19 @@ class GitDirParser:
                     print("Error reading fname: " + fname + '. ' + dirpath, dirnames, fnames)
                     print(e)
 
+
 class DiffObject:
     def __init__(self, fst, snd):
-        '''
+        """
             fst: GitDirSnapshot
             snd: GitDirSnapshot
             created: list of entries that were created (from fst to snd)
             removed: list of entries that were removed (from fst to snd)
             modified: list of entires that were modified (from fst to snd)
             static: list of entries that were unchanged (from fst to snd)
-        '''
-        self.fst      = fst
-        self.snd      = snd
+        """
+        self.fst = fst
+        self.snd = snd
         created  = []
         removed  = []
         modified = []
@@ -163,27 +166,28 @@ class DiffObject:
 
         print('| created [{}]:'.format(len(self.created)))
         for o in self.created:
-            print('|    ',o)
+            print('|    ', o)
         print('| modified [{}]:'.format(len(self.modified)))
         for o in self.modified:
-            print('|    ',o)
+            print('|    ', o)
         print('| removed [{}]:'.format(len(self.removed)))
         for o in self.removed:
-            print('|    ',o)
+            print('|    ', o)
 
         if not updated_only:
             print('| static [{}]:'.format(len(self.static)))
             for o in self.static:
-                print('|    ',o)
+                print('|    ', o)
         print('+' + '-'*78 + '+')
 
+
 class GitDirSnapshot:
-    '''
+    """
         GitDirSnapshot holds a snapshot of the .git directory. This is the raw
         content and has little semantic meaning without being processed by a
         GitDir instance
-    '''
-    def __init__(self, dir_to_parse, message = '', verbose=True):
+    """
+    def __init__(self, dir_to_parse, message='', verbose=True):
         self.entries = {}
         if message:
             self.message = message
@@ -197,8 +201,10 @@ class GitDirSnapshot:
         pass
 
     def diff(self, other):
-        ''' assuming that self is newer than other, calculate the difference
-            in the .git directory tree'''
+        """ assuming that self is newer than other, calculate the difference
+            in the .git directory tree
+        """
+        pass
 
     def __str__(self):
         return 'Snapshot[{}]'.format(self.message)
@@ -206,13 +212,14 @@ class GitDirSnapshot:
     def __repr__(self):
         return 'Snapshot[{}] with {} entries'.format(self.message, len(self.entries))
 
+
 class GitDirLog:
-    '''takes a snapshot of the .git directory'''
+    """ Takes a snapshot of the .git directory """
     def __init__(self, gitdir, autodiff=True):
-        '''
+        """
             gitdir: directory to track
             autodiff: track diffs (and print them) automatically
-        '''
+        """
         self.snapshots = []
         self.gitdir = gitdir
         self.autodiff = autodiff
@@ -221,7 +228,7 @@ class GitDirLog:
         if autodiff:
             self.diffs = []
 
-    def take_snapshot(self, message = '', verbose = True):
+    def take_snapshot(self, message='', verbose=True):
         snap = GitDirSnapshot(self.gitdir, message, verbose)
         self.snapshots.append(snap)
         if self.autodiff:
@@ -240,13 +247,13 @@ class GitDirLog:
         diffs = []
         if len(self.snapshots) > 0:
             s1, s2 = None, self.snapshots[-1]
-            diffs = [DiffObject(s1, s2)] # Seed initial diff
+            diffs = [DiffObject(s1, s2)]        # Seed initial diff
         for i in range(1, len(self.snapshots)):
             s1, s2 = self.snapshots[i-1], self.snapshots[i]
             diffs.append(DiffObject(s1, s2))
         return diffs
     
-    def print_diffs(self, start=0, end = -1):
+    def print_diffs(self, start=0, end=-1):
         print("-=" * 40)
         print("|                         Printing Difference Objects                          |")
         print("-=" * 40)
