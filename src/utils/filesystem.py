@@ -10,16 +10,19 @@ class File:
     def __init__(self, name, contents='', parent=None):
         self.name = name
         self.contents = contents
-        self.parent = parent
         self.absolute_path = self.calculate_absolute_path()
+        self.set_parent(parent)
 
     def calculate_absolute_path(self):
         if self.parent is None:
             return None
         return os.path.join(self.parent.absolute_path, self.name)
 
-    def set_parent(self, directory):
-        self.parent = directory
+    def set_parent(self, parent):
+        """ Set self's parent and add self to parent.files """
+        self.parent = parent
+        if parent:
+            parent.add_file(self)
 
     def __eq__(self, other):
         """ This does not compare contents - only name and parent """
