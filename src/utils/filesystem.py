@@ -8,6 +8,14 @@ import os
 class File:
     """ A file in the file system """
     def __init__(self, name, contents='', parent=None):
+        """
+        Create a new File object
+        :param name: str representing the name of the file (i.e., 'foo.txt')
+        :param contents: optional str representing the contents o the file
+        :param parent: optional Directory instance representing the parent
+        directory of this file. If this is None (i.e., unspecified) then the
+        parent is undefined.
+        """
         assert isinstance(name, str)
         assert isinstance(contents, str)
         self.name = name
@@ -76,24 +84,36 @@ class Directory:
 
     def add_file(self, file):
         """ add a file to self """
+        if not isinstance(file, File):
+            raise TypeError()
+
         if file not in self.files:
             self.files.append(file)
             file.set_parent(self)
 
     def add_directory(self, directory):
         """ add a directory to self """
+        if not isinstance(directory, Directory):
+            raise TypeError()
+
         if directory not in self.directories:
             self.directories.append(directory)
+            directory.set_parent(self)
 
     def calculate_absolute_path(self):
         """ calculate the absolute path of this directory """
         if self.parent is None:
-            Path()
+            Path(self)
         else:
             self.absolute_path = os.path.join(self.parent.absolute_path, self.name)
         return self.absolute_path
 
     def is_child_of(self, directory):
+        """
+        Determines if self is an ancestor of directory
+        :param directory:
+        :return: True if self is a child of directory; False otherwise
+        """
         if directory is None:
             return False
 
@@ -105,8 +125,19 @@ class Directory:
 
         return False
 
-    def set_parent(self, directory):
-        self.parent = directory
+    def set_parent(self, parent):
+        """
+        Set the parent Directory of this Directory.
+        :param parent: the new parent Directory of self
+        :return: None
+        """
+        if self.parent == parent:
+            return
+        if self.parent is not None:
+            self.parent.directories.remove(self)
+        self.parent = parent
+        if parent:
+            parent.add_directory(self)
 
     def __eq__(self, other):
         """ Compare directories """
@@ -117,6 +148,15 @@ class Directory:
     def __hash__(self):
         return hash(hash(self.name, hash(self.parent)))
 
+    def __contains__(self, item):
+        if isinstance(item, File):
+            return item in self.files
+
+        if isinstance(item, Directory):
+            return item in self.directories
+
+        return False
+
     def __repr__(self):
         return 'Directory(' + self.name + '/)'
 
@@ -126,6 +166,10 @@ class Directory:
 
 class Path:
     def __init__(self, path=None):
+        """
+        :param path: a File, a Directory, or a list of Directories possibly
+        ending with a File
+        """
         if path is None:
             self.path = []
         elif isinstance(path, Directory) or isinstance(path, File):
@@ -157,19 +201,19 @@ class Path:
         if not self.check_invariant():
             raise InvalidPathException("Invalid path: {}".format(str(self)))
 
-    def __len__(self):
-        return len(self.path)
-
-    def __iadd__(self, other):
+    def __add__(self, other):
         """ Add this path to another """
         assert isinstance(other, Path)
         result = Path(self.path + other.path)
-        result.assert_invariant(self)
+        result.assert_invariant()
+        return result
 
-    def __str__(self):
-        if self.path:
-            return os.path.join(*map(str, self.path))
-        return ''
+    def __getitem__(self, item):
+        assert isinstance(item, int)
+        return self.path[item]
+
+    def __len__(self):
+        return len(self.path)
 
     def __repr__(self):
         if self.path:
@@ -179,6 +223,11 @@ class Path:
                 strings.append(str(e))
             return 'Path({})'.format(os.path.join(*strings))
         return 'EmptyPath'
+
+    def __str__(self):
+        if self.path:
+            return os.path.join(*map(str, self.path))
+        return ''
 
 
 class InvalidPathException(Exception):
