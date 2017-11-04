@@ -16,8 +16,10 @@ class File:
         directory of this file. If this is None (i.e., unspecified) then the
         parent is undefined.
         """
-        assert isinstance(name, str)
-        assert isinstance(contents, str)
+        assert isinstance(name, (bytes, str)), \
+            'name must be type bytes or str but found {} instead'.format(type(name))
+        assert isinstance(contents, (bytes, str)), \
+            'contents must be type bytes or str but found {} instead'.format(type(contents))
         self.name = name
         self.contents = contents
         self.parent = None
