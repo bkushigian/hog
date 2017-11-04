@@ -26,7 +26,7 @@ from datetime import datetime
 from os import path
 from os import walk
 
-from git.gitobjs import GitIndex
+from git.git_fs import GitIndex
 
 FILE = 'f'
 DIR = 'd'
@@ -98,7 +98,8 @@ class GitDirParser:
                                               cdate=cdt, mdate=mdt))
                 except Exception as e:
                     print("Error reading fname: " + fname + '. ' + dirpath, dirnames, fnames)
-                    print(e)
+                    import traceback
+                    traceback.print_exc()
 
 
 class DiffObject:
