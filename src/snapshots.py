@@ -37,6 +37,7 @@ class Entry:
     about the file such as the name, contents, hash, type, create date and
     modified date.
     """
+
     def __init__(self, name, contents=None, sha1=0, tp=DIR,
                  cdate=None, mdate=None, uid=None, gid=None, perms=None):
         self.name = name
@@ -57,8 +58,8 @@ class Entry:
 
     def long_string(self):
         return '[{}] {} : {} : {}'.format(self.type, self.short_name, self.sha1,
-                                    self.cdate, self.mdate) 
-        
+                                          self.cdate, self.mdate)
+
     def __repr__(self):
         return str(self)
 
@@ -86,7 +87,7 @@ class GitDirParser:
                     with open(fname, 'rb') as afile:
                         contents = afile.read()
                         if fname.endswith('.git/index'):
-                            self.index = GitIndex(contents,verbose)
+                            self.index = GitIndex(contents, verbose)
                         contents = str(contents).encode('utf-8')
 
                     sha1hasher = hashlib.sha1()
@@ -114,10 +115,10 @@ class DiffObject:
         """
         self.fst = fst
         self.snd = snd
-        created  = []
-        removed  = []
+        created = []
+        removed = []
         modified = []
-        static   = []
+        static = []
 
         if fst is None:
             for key in snd.entries.keys():
@@ -135,7 +136,7 @@ class DiffObject:
 
                 elif key not in sndkeys:
                     removed.append(fst.entries[key])
-                
+
                 elif key in sndkeys and key in fstkeys:
                     new, old = snd.entries[key], fst.entries[key]
                     if new.type == 'd' and old.type == 'd':
@@ -149,13 +150,13 @@ class DiffObject:
                     else:
                         modified.append(new)
 
-        self.created  = created
-        self.removed  = removed
+        self.created = created
+        self.removed = removed
         self.modified = modified
-        self.static   = static
+        self.static = static
 
-    def print_diff(self, updated_only = True):
-        print('+' + '-'*78 + '+')
+    def print_diff(self, updated_only=True):
+        print('+' + '-' * 78 + '+')
 
         if self.fst and self.snd:
             s = 'Difference Object: {} -> {}'.format(self.fst.message, self.snd.message)
@@ -164,7 +165,7 @@ class DiffObject:
         s = '{0: ^78}'.format(s)
 
         print('|' + s + '|')
-        print('+' + '-'*78 + '+')
+        print('+' + '-' * 78 + '+')
 
         print('| created [{}]:'.format(len(self.created)))
         for o in self.created:
@@ -180,7 +181,7 @@ class DiffObject:
             print('| static [{}]:'.format(len(self.static)))
             for o in self.static:
                 print('|    ', o)
-        print('+' + '-'*78 + '+')
+        print('+' + '-' * 78 + '+')
 
 
 class GitDirSnapshot:
@@ -189,6 +190,7 @@ class GitDirSnapshot:
         content and has little semantic meaning without being processed by a
         GitDir instance
     """
+
     def __init__(self, dir_to_parse, message='', verbose=True):
         self.entries = {}
         if message:
@@ -217,6 +219,7 @@ class GitDirSnapshot:
 
 class GitDirLog:
     """ Takes a snapshot of the .git directory """
+
     def __init__(self, gitdir, autodiff=True):
         """
             gitdir: directory to track
@@ -225,7 +228,7 @@ class GitDirLog:
         self.snapshots = []
         self.gitdir = gitdir
         self.autodiff = autodiff
-        self.diffs = None # Default, we don't store diffs
+        self.diffs = None  # Default, we don't store diffs
 
         if autodiff:
             self.diffs = []
@@ -235,7 +238,7 @@ class GitDirLog:
         self.snapshots.append(snap)
         if self.autodiff:
             if len(self.snapshots) > 1:
-                s1,s2 = self.snapshots[-2:]
+                s1, s2 = self.snapshots[-2:]
             else:
                 s1, s2 = None, self.snapshots[-1]
             diff = DiffObject(s1, s2)
@@ -244,17 +247,17 @@ class GitDirLog:
                 diff.print_diff()
 
         return snap
-    
+
     def compute_diffs(self):
         diffs = []
         if len(self.snapshots) > 0:
             s1, s2 = None, self.snapshots[-1]
-            diffs = [DiffObject(s1, s2)]        # Seed initial diff
+            diffs = [DiffObject(s1, s2)]  # Seed initial diff
         for i in range(1, len(self.snapshots)):
-            s1, s2 = self.snapshots[i-1], self.snapshots[i]
+            s1, s2 = self.snapshots[i - 1], self.snapshots[i]
             diffs.append(DiffObject(s1, s2))
         return diffs
-    
+
     def print_diffs(self, start=0, end=-1):
         print("-=" * 40)
         print("|                         Printing Difference Objects                          |")
