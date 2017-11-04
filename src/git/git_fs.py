@@ -9,12 +9,14 @@ ZEROBYTES = bytes('\x00'.encode('utf-8'))
 NEWLINEBYTES = bytes('\n'.encode('utf-8'))
 SPACEBYTES = bytes(' '.encode('utf-8'))
 
+
 class GitDir(fs.Directory):
     """
         This should take a parsed git directory and extract the relevant info,
         wrapping the content in the semantics of the Git dir. This represents a moment
         in time and stores the data in a snapshot.
     """
+
     def __init__(self, parsed):
         super().__init__('.git', [], [], None)
         self.branches = None
@@ -75,7 +77,7 @@ class GitIndex(File):
             else:
                 entry, xs = self.read_index_entry(xs, verbose)
 
-    def read_tree_extension(self, bs, verbose = True):
+    def read_tree_extension(self, bs, verbose=True):
         if verbose:
             print("Reading tree extension")
         if not bs.startswith("TREE".encode('utf-8')):
@@ -85,11 +87,11 @@ class GitIndex(File):
         xs = bs[4:]
         xs.strip(ZEROBYTES)
         trees = []
-        t,xs = self.read_cached_tree(xs, verbose)
+        t, xs = self.read_cached_tree(xs, verbose)
         if t == None:
-            return trees, xs # This should throw an error...
+            return trees, xs  # This should throw an error...
         while xs:
-            t,xs = self.read_cached_tree(xs, verbose)
+            t, xs = self.read_cached_tree(xs, verbose)
             if t == None:
                 break
             trees.append(t)
@@ -107,10 +109,10 @@ class GitIndex(File):
         xs.strip(ZEROBYTES)
 
         entries_in_index, xs = self.read_bytes_til(xs, delim=SPACEBYTES)
-        xs = xs[1:] # pass the space
+        xs = xs[1:]  # pass the space
 
         number_of_subtrees, xs = self.read_bytes_til(xs, delim=NEWLINEBYTES)
-        xs = xs[1:] # pass the newline
+        xs = xs[1:]  # pass the newline
 
         objname = ''.join(['{:02x}'.format(c) for c in xs[:20]])
         xs = xs[20:]
@@ -129,11 +131,11 @@ class GitIndex(File):
         return result, xs
 
     def print_cached_tree(self, tree):
-        print('+' + '-'*78 + '+')
+        print('+' + '-' * 78 + '+')
         s = 'Cached Tree'
         s = '{0: ^78}'.format(s)
         print(s)
-        print('+' + '-'*78 + '+')
+        print('+' + '-' * 78 + '+')
         fields = [
             'path comp',
             'entries in index',
@@ -144,10 +146,10 @@ class GitIndex(File):
         for key in fields:
             print('| {:20}'.format(key + ':') + tree[key])
 
-        print('+' + ('-'*78) + '+')
+        print('+' + ('-' * 78) + '+')
         print()
 
-    def read_index_entry(self, bs, verbose = True):
+    def read_index_entry(self, bs, verbose=True):
         xs = bs
         entry = {}
         fields = [
@@ -173,7 +175,7 @@ class GitIndex(File):
         xs = xs[xs.find(0):]
         entry['name'] = str(name)
 
-        self.indexEntries.append(entry) # Just a dictionary for now
+        self.indexEntries.append(entry)  # Just a dictionary for now
         if verbose:
             self.print_index_entry(entry)
 
@@ -196,16 +198,16 @@ class GitIndex(File):
             'sha1',
             'flags',
         ]
-        print('+' + '-'*78 + '+')
+        print('+' + '-' * 78 + '+')
         s = 'Index Entry'
         s = '{0: ^78}'.format(s)
         print('|' + s + '|')
-        print('+' + '-'*78 + '+')
+        print('+' + '-' * 78 + '+')
 
         for key in fields:
             print('| {:11}:'.format(key) + entry[key])
 
-        print('+' + ('-'*78) + '+')
+        print('+' + ('-' * 78) + '+')
         print()
 
     def bytes_to_int(self, bs):
@@ -221,7 +223,7 @@ class GitIndex(File):
             i += 1
         return bs[i:]
 
-    def read_bytes_til_nul(self, bs, strip_nul = True):
+    def read_bytes_til_nul(self, bs, strip_nul=True):
         i = bs.find(ZEROBYTES)
         if i < 0:
             return (None, bs)
@@ -229,9 +231,8 @@ class GitIndex(File):
             return (bs[:i], bs[i:].strip(ZEROBYTES))
         return (bs[:i], bs[i:])
 
-    def read_bytes_til(self, xs, delim = ZEROBYTES):
+    def read_bytes_til(self, xs, delim=ZEROBYTES):
         i = xs.find(delim)
         if i < 1:
             return None, xs
         return xs[:i], xs[i:]
-
