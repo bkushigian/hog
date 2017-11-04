@@ -61,7 +61,7 @@ class TestFile(TestCase):
         root = Directory('')
         path = root.calculate_absolute_path()
         self.assertEqual(1, len(path), 'path {} should have single element: {}'.format(
-            path, root ))
+            path, root))
 
     def test_equals(self):
         f = File('f')
@@ -72,7 +72,6 @@ class TestFile(TestCase):
 
 
 class TestDirectory(TestCase):
-
     def setUp(self):
         self.f1 = File('f1.txt', 'Contents of f1')
         self.f2 = File('f2.txt', 'Contents of f2')
@@ -168,7 +167,7 @@ class TestPath(TestCase):
     def test_get_item(self):
         d = Directory('d')
         p = Path(d)
-        self.assertEquals(d,p[0])
+        self.assertEquals(d, p[0])
 
     def test_iadd(self):
         d1 = Directory('d1')
@@ -179,4 +178,3 @@ class TestPath(TestCase):
         self.assertEqual(2, len(p3))
         self.assertEqual(p3[0], d1)
         self.assertEqual(p3[1], d2)
-
