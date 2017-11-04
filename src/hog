@@ -78,7 +78,7 @@ def repl(log):
 
     global_vars = globals().copy()
     global_vars.update(locals())
-    shell = code.InteractiveConsole(vars)
+    shell = code.InteractiveConsole(global_vars)
     shell.interact()
 
 if __name__ == '__main__':
