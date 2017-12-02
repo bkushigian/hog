@@ -245,9 +245,9 @@ class CommandParser:
     def parse_file(self, file):
         with open(file) as f:
             contents = f.read()
-        return self.parse_string(contents)
+        return self.parse(contents)
 
-    def parse_string(self, s):
+    def parse(self, s):
         lines = s.split('\n')
         result = []
         for i, line in enumerate(lines):
@@ -260,7 +260,7 @@ class CommandParser:
                 raise ParseError('Line {}: Unknown constructor {}'.format(items[0]))
             constructor = CommandParser.consDict[key]
             args = items[1:]
-            if key != 'add' and	 len(args) != constructor.args - 1:
+            if key != 'add' and	len(args) != constructor.args - 1:
                 raise ParseError('Line {}: When parsing {} command expected {} arguments but found {}'.format(
                     i, items[0], constructor.args, len(args)
                 ))
@@ -278,10 +278,9 @@ class CommandParser:
         if not l.startswith('(') or not l.endswith(')'):
             raise ParseError('Line {}: ADD expects a tuple of arguments but found: "{}" '
                              .format(i, l))
-        l = l[1,-1]
-        args = l.split(',')
+        l = l[1: -1]
+        args = list(map(lambda s: s.strip(),l.split(',')))
         return Add(self.session, args)
-
 
 
 class ParseError(RuntimeError):

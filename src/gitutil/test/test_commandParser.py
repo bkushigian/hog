@@ -2,7 +2,7 @@ from unittest import TestCase
 from os import path as osp
 import os
 
-from gitutil.commands import CommandParser
+from gitutil.commands import *
 from gitutil.session import GitSession
 
 join = osp.join
@@ -23,8 +23,12 @@ class TestCommandParser(TestCase):
             s = f.read()
 
         parser = CommandParser(session)
-        parsed = parser.parse_string(s)
+        parsed = parser.parse(s)
         for c in parsed:
             c.execute()
-        print(session.dir())
-        print(parsed)
+        expected = [CreateFile, CreateFile, CreateFile, CreateDirectory,
+                    CreateDirectory, CreateDirectory, AppendLineToFile,
+                    AppendLineToFile, AppendLineToFile, Add]
+
+        for a, e in zip(parsed + ([None] * 20), expected):
+            self.assertIsInstance(a,e)
