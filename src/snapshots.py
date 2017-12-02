@@ -26,7 +26,7 @@ from datetime import datetime
 from os import path
 from os import walk
 
-from git.git_fs import GitIndex
+from gitutil.git_fs import GitIndex
 
 FILE = 'f'
 DIR = 'd'
