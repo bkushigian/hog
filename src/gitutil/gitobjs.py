@@ -1,7 +1,7 @@
 """
     gitobjs.py represents Git atomics - commits, HEAD, index, etc.
 """
-from git.git_fs import GitIndex
+from gitutil.git_fs import GitIndex
 
 
 class GitBranch:
