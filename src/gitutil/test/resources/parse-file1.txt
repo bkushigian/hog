@@ -1,0 +1,13 @@
+createfile f1
+createfile f2
+createfile f3
+
+createdirectory d1
+createdirectory d2
+createdirectory d3
+
+appendlinetofile f1 line1
+appendlinetofile f2 line1
+appendlinetofile f2 line2
+
+add f1 f2 f3 d1 d2 d3
