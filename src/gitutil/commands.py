@@ -16,8 +16,13 @@ class Add(Command):
         """
         self.files = files
 
-    def execute(self):
-        pass
+    def execute(self, session):
+        """
+        Execute git add files on a running session
+        :param session: session in which to call git add
+        :return:
+        """
+        session.git.add(self.files)
 
 
 class Commit(Command):
@@ -26,8 +31,9 @@ class Commit(Command):
         if message is None:
             self.message = ""
 
-    def execute(self):
-        pass
+    def execute(self, session):
+        session.git.commit(self.message)
+
 
 class AppendLineToFile(Command):
     """
@@ -104,6 +110,7 @@ class InsertLinesAfterLine(Command):
         f = open(file, 'w')
         f.write('\n'.join(lines))
         f.close()
+
 
 class DeleteLine(Command):
     def __init__(self, line):
