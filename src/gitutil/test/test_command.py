@@ -135,7 +135,3 @@ class TestCommand(TestCase):
         self.assertEqual(lines[3] + ' TEST4\n', result[3])
         self.assertEqual(lines[4]             , result[4])
 
-
-
-
-

@@ -1,13 +1,19 @@
-createfile f1
-createfile f2
-createfile f3
+touch f1
+touch f2
+touch f3
 
-createdirectory d1
-createdirectory d2
-createdirectory d3
+mkdir d1
+mkdir d2
+mkdir d3
 
-appendlinetofile f1 line1
-appendlinetofile f2 line1
-appendlinetofile f2 line2
+touch d1/f1
+touch d2/f1
+touch d3/f1
 
-add (f1, f2, f3, d1, d2, d3)
+>> f1 "this is the first file"
+>> f2 "this is the second file"
+>> f3 "this is the third file"
+
+add (f1,f2,f3,d1/f1,d2/f1,d3/f1)
+
+commit "Created some stuff"
