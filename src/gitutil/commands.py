@@ -246,21 +246,6 @@ class ReadFileLines(Command):
 
 
 class CommandParser:
-    consDict = {
-        'add'                   : Add,
-        'commit'                : Commit,
-        'createfile'            : CreateFile,
-        'createdirectory'       : CreateDirectory,
-        'appendlinetofile'      : AppendLineToFile,
-        'appendlinestofile'     : AppendLinesToFile,
-        'appendstringtoline'    : AppendStringToLine,
-        'insertlineafterline'   : InsertLineAfterLine,
-        'insertlinesafterline'  : InsertLinesAfterLine,
-        'deleteline'            : DeleteLine,
-        'readfile'              : ReadFile,
-        'readfilelines'         : ReadFileLines,
-    }
-
     def __init__(self, session):
         self.session = session
         self.line = 1
