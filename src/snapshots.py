@@ -75,6 +75,7 @@ class Entry:
     def __ge__(self, other):
         return self.name >= other.name
 
+
 class GitDirParser:
     """ Creates a time-indexed list of entries"""
     ext_to_ignore = ['swp']

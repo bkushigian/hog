@@ -198,6 +198,14 @@ class GitIndex(File):
             'sha1',
             'flags',
         ]
+
+        # XXX: This is a temporary hack
+        # TODO: Fix index parse to not read empty index entries
+        # TODO: Figure out WTF the string literal "b''" is doing here...
+        #       frikkin' Python, man, I tell you...
+        if entry['name'] == "b''":
+            return
+
         print('+' + '-' * 78 + '+')
         s = 'Index Entry'
         s = '{0: ^78}'.format(s)
