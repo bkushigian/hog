@@ -60,7 +60,7 @@ class TestCommandParser(TestCase):
         self.assertEqual(head, left)
         self.assertEqual(tail, right)
 
-    def test_parse_add(self):
+    def test_parse_add1(self):
         s = 'add (foo,bar,baz)\nadd (foo,baz,bar,bing)'
         parser = self.parser
         result = parser.parse(s)
@@ -72,6 +72,17 @@ class TestCommandParser(TestCase):
         self.assertIsInstance(result[1], Add,
                               "add should, well, add...")
         self.assertEqual(4, len(result[1].files))
+
+    def test_parse_add2(self):
+        s = 'add (foo)'
+        parser = self.parser
+        result = parser.parse(s)
+
+        self.assertEqual(1, len(result))
+        self.assertIsInstance(result[0], Add,
+                              "add should, well, add...")
+        self.assertEqual(1, len(result[0].files))
+        self.assertEqual('foo', result[0].files[0])
 
     def test_parse_commit(self):
         s = 'commit "This is a commit message"'
