@@ -63,6 +63,17 @@ class Entry:
     def __repr__(self):
         return str(self)
 
+    def __le__(self, other):
+        return self.name <= other.name
+
+    def __lt__(self, other):
+        return self.name < other.name
+
+    def __gt__(self, other):
+        return self.name > other.name
+
+    def __ge__(self, other):
+        return self.name >= other.name
 
 class GitDirParser:
     """ Creates a time-indexed list of entries"""
@@ -168,18 +179,18 @@ class DiffObject:
         print('+' + '-' * 78 + '+')
 
         print('| created [{}]:'.format(len(self.created)))
-        for o in self.created:
+        for o in sorted(self.created):
             print('|    ', o)
         print('| modified [{}]:'.format(len(self.modified)))
-        for o in self.modified:
+        for o in sorted(self.modified):
             print('|    ', o)
         print('| removed [{}]:'.format(len(self.removed)))
-        for o in self.removed:
+        for o in sorted(self.removed):
             print('|    ', o)
 
         if not updated_only:
             print('| static [{}]:'.format(len(self.static)))
-            for o in self.static:
+            for o in sorted(self.static):
                 print('|    ', o)
         print('+' + '-' * 78 + '+')
 
