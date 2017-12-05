@@ -77,5 +77,11 @@ Another goal is to create a `Lesson` class that can either be used by a Jupyter
 notebook or by the command line client. It would be nice to be able to group
 common themed lessons together.
 
+As far as the Jupyter notebooks are concerned, it would be nice to be able to
+auto-generate parts of our notebooks and output specific Python commands based
+on the current state of the program. For example, it would be great to be able
+to capture the current temporary Git session location and include that in the
+Markdown sections directly.
+
 Finally, we would like to create a larger set of lessons and get feedback from
 folks at different learning stages of Git.
