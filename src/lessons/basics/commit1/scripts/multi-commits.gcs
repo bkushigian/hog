@@ -1,0 +1,9 @@
+touch f2
+add (f2)
+commit "Created file f2"
+>> f1 "=== FILE 1 ==="
+add (f1)
+commit "Added text to f1"
+>> f2 "=== FILE 2 ==="
+add (f2)
+commit "Added text to f2"

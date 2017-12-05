@@ -1,0 +1,5 @@
+touch f1
+>> f1 "first line in f1"
+add (f1)
+>> f1 "second line in f1"
+commit "First commit"
