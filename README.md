@@ -21,17 +21,22 @@ this has been done it in hindsight seems easy.
 
 The solution, then, is to get the students to learn Git well enough that they
 can teach themselves whatever they need to know; that is, _we teach them enough
-to read the man pages!_ That is our goal, and that is what we strive to do.
+to read the man pages!_ That is our goal, and to do this we focus on both the
+plumbing and the porcelain of Git.
 
 ## How it works
 
 While HOG is still under development it does have two functional modes of use.
-First is the command line client that does some setup, points itself at a Git
-repo of the user's choice, and then fires up a Python REPL with some extra
-functionality: this can be accessed with the `hog` command in the root of this
-project (this just calls into the `src/hogCLI.py` script). The second way to use
-HOG is to run one of the Jupyter Notebooks. These are stored in `/src/notebooks`
-and have interactive lessons.
+
+* First is the command line client that does some setup, points itself at a Git
+  repo of the user's choice, and then fires up a Python REPL with some extra
+  functionality: this can be accessed with the `hog` command in the root of this
+  project (this just calls into the `src/hogCLI.py` script in the `src`
+  directory). 
+
+* The second way to use HOG is to run one of the Jupyter Notebooks.  These are
+  stored in `/src/notebooks` and have interactive lessons that introduce the
+  student to new concepts.
 
 ## Development
 
@@ -41,3 +46,22 @@ trouble with and try to give clear expositions on different subjects.
 
 In addition to clarifying our pedagogical methods there is currently work being
 done trying to develop a clean API that will model the Git directory.
+
+### Development Goals
+
+Right now we are in a prototyping phase. Enough functionality exists that we can
+create basic Git repositories with a simple scripting language. This allows us
+to build up lessons and provide students with a scenarios that illustrate
+certain concepts.
+
+Additionally, the entirety of the `.git` directory is tracked in a naive manner
+at each snapshot. We aim to wrap this in a mock file system to add some
+semantics to the different parts of the `.git` directory. Also, while the
+`index` file is currently parsed (although there are bugs in the parser) it is
+worth investigating how we could parse other binary files. It is our goal to
+model all players in the `.git` repo and allow the user to interact with these
+in real time.
+
+Another goal is to create a `Lesson` class that can either be used by a Jupyter
+notebook or by the command line client. It would be nice to be able to group
+common themed lessons together.
