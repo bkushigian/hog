@@ -109,7 +109,7 @@ class AppendLineToFile(Command):
 
     def execute(self):
         f = open(join(self.session.dir(), self.file), 'a')
-        f.write(self.line)
+        f.write(self.line + '\n')
         f.close()
 
 
