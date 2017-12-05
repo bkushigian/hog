@@ -52,7 +52,18 @@ done trying to develop a clean API that will model the Git directory.
 Right now we are in a prototyping phase. Enough functionality exists that we can
 create basic Git repositories with a simple scripting language. This allows us
 to build up lessons and provide students with a scenarios that illustrate
-certain concepts.
+certain concepts. While some basic commands are implemented in the scripting
+language we do not yet have a robust enough set of primitives to create all
+scenarios that we would like to. Some additions would be
+
+- `branch`: Create a new branch
+- `tag`: Create a new tag
+- `checkout`: Checkout a commit
+- `rm`: Remove a file
+- `rmdir`: Remove a directory
+- `rebase`: Run `git rebase`
+- `revert`: Run `git revert`
+- `reset`: Run `git reset`
 
 Additionally, the entirety of the `.git` directory is tracked in a naive manner
 at each snapshot. We aim to wrap this in a mock file system to add some
@@ -65,3 +76,6 @@ in real time.
 Another goal is to create a `Lesson` class that can either be used by a Jupyter
 notebook or by the command line client. It would be nice to be able to group
 common themed lessons together.
+
+Finally, we would like to create a larger set of lessons and get feedback from
+folks at different learning stages of Git.
