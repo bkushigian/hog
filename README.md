@@ -93,3 +93,25 @@ Markdown sections directly.
 
 Finally, we would like to create a larger set of lessons and get feedback from
 folks at different learning stages of Git.
+
+## Installing and Running
+
+This has two dependencies
+
+* GitPython
+* Jupyter
+
+If you don't plan on using the Jupyter Notebooks you can ignore the second
+dependency.
+
+Pip is recommended and Python3 is required. To run you can simply use the `hog`
+command at the top level of this repository, which takes a .git directory path
+as an argument. It prints a simple `help` statement which tells you how to sue
+it. For more detailed info, fire up Jupyter Notebook with
+
+        jupyter notebook
+
+and navigate to `src/notebooks`. Here you can run `git-basics`, `git add-1`,
+etc. These notebooks are still in early stages but they exhibit much of the
+functionality that HOG currently has - they are definitely a great place to
+start.
