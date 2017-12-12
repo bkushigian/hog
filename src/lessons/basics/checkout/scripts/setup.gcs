@@ -1,0 +1,22 @@
+touch f1
+add (f1)
+commit "First commit"
+>> f1 "first line in f1"
+add (f1)
+commit "Second commit"
+branch new-branch
+>> f1 "second line in f1"
+add (f1)
+commit "Third commit"
+touch f2
+add (f2)
+commit "Fourth commit"
+checkout new-branch
+touch f3
+add (f3)
+commit "Fifth commit"
+>> f3 "This is on a new branch"
+add (f3)
+commit "Sixth commit"
+checkout master
+

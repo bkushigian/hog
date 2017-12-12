@@ -6,6 +6,8 @@ from os.path import join
 from gitutil.session import GitSession
 from gitutil.commands import (Command,
                               Add,
+                              Branch,
+                              Checkout,
                               Commit,
                               CreateFile,
                               CreateDirectory,
@@ -60,6 +62,49 @@ class TestCommand(TestCase):
         self.assertIn('f1', entries)
         self.assertIn('f2', entries)
 
+    def test_branch1(self):
+        f1 = join(self.dir, 'f1')
+        f2 = join(self.dir, 'f2')
+
+        with open(f1, 'w') as f:
+            f.write('This is file 1')
+
+        with open(f2, 'w') as f:
+            f.write('This is file 2')
+
+        Add(self.session, [f1, f2]).execute()
+        Commit(self.session, 'first commit').execute()
+        Branch(self.session, 'new-branch').execute()
+
+        heads = self.session.repo().heads
+        self.assertEqual('master', heads[0].name)
+        self.assertEqual('new-branch', heads[1].name)
+
+    def test_checkout1(self):
+        f1 = join(self.dir, 'f1')
+        f2 = join(self.dir, 'f2')
+
+        with open(f1, 'w') as f:
+            f.write('This is file 1')
+
+        with open(f2, 'w') as f:
+            f.write('This is file 2')
+
+        Add(self.session, [f1, f2]).execute()
+        Commit(self.session, 'first commit').execute()
+        Branch(self.session, 'new-branch').execute()
+
+        with open(f1, 'w') as f:
+            f.write('This is an updated file 1')
+
+        with open(f2, 'w') as f:
+            f.write('This is an updated file 2')
+
+        Add(self.session, [f1, f2]).execute()
+        Commit(self.session, 'second commit').execute()
+        Checkout(self.session, 'new-branch').execute()
+        self.assertEqual('new-branch', self.session.repo().head.ref.name)
+
     def test_commit1(self):
         f1 = join(self.dir, 'f1')
         f2 = join(self.dir, 'f2')
@@ -93,7 +138,7 @@ class TestCommand(TestCase):
     def test_append_line_to_file(self):
         CreateFile(self.session, 'f').execute()
         AppendLineToFile(self.session, 'f', 'this is a test').execute()
-        self.assertEqual('this is a test', ReadFile(self.session, 'f').execute())
+        self.assertEqual('this is a test\n', ReadFile(self.session, 'f').execute())
 
     def test_append_lines_to_file(self):
         lines = [

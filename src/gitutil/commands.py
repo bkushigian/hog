@@ -60,6 +60,40 @@ class Commit(Command):
         return "<Commit {}: \"{}\">".format(self.number, self.message)
 
 
+class Branch(Command):
+    args = 2
+    _number = 0
+
+    def __init__(self, session, branch_name=None):
+        self.session = session
+        self.branch_name = branch_name
+        Branch._number += 1
+
+        if branch_name is None:
+            self.branch_name = 'branch{}'.format(Branch._number)
+
+    def execute(self):
+        return self.session.repo().create_head(self.branch_name)
+
+    def __str__(self):
+        return "<Branch {}>".format(self.branch_name)
+
+    def __repr__(self):
+        return "<Branch {}>".format(self.branch_name)
+
+
+class Checkout(Command):
+    def __init__(self, session, branch_name):
+        self.session = session
+        self.branch_name = branch_name
+
+    def execute(self):
+        heads = self.session.repo().heads
+        for head in heads:
+            if head.name == self.branch_name:
+                head.checkout()
+
+
 class CreateFile(Command):
     """
     Create a new file
@@ -274,6 +308,14 @@ class CommandParser:
                 files = self.last_result
                 result.append(Add(self.session, files))
 
+            elif word == 'branch':
+                branch, s = self.consume_word(s)
+                result.append(Branch(self.session, branch))
+
+            elif word == 'checkout':
+                branch, s = self.consume_word(s)
+                result.append(Checkout(self.session, branch))
+
             elif word == 'commit':
                 msg, s = self.consume_string(s)
                 result.append(Commit(self.session, msg))
@@ -291,6 +333,7 @@ class CommandParser:
                 _, s = self.consume_ws(s)
                 line, s = self.consume_string(s)
                 result.append(AppendLineToFile(self.session, fname, line))
+
             elif word == 'append-to-line':
                 raise NotImplementedError()
             elif word == 'insert-line':
@@ -302,7 +345,7 @@ class CommandParser:
             elif word == 'read-file-lines':
                 raise NotImplementedError()
             else:
-                raise ParseError('Unrecognized Command')
+                raise ParseError('Unrecognized Command: ' + word)
             _, s = self.consume_ws(s)
         return result
 
@@ -364,8 +407,10 @@ class CommandParser:
                     self.linepos = 0
                 c = s[pos]
             elif c == "\n":
-                raise ParseError("({}:{}) Unescaped newline in string"
-                                 .format(self.line, self.linepos))
+                # raise ParseError("({}:{}) Unescaped newline in string"
+                #                  .format(self.line, self.linepos))
+                pos += 1
+                c = s[pos]
             else:
                 pos += 1
                 if pos >= length:

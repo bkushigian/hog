@@ -93,6 +93,26 @@ class TestCommandParser(TestCase):
         self.assertIsInstance(result[0], Commit,
                               "commit should create a commit")
 
+    def test_parse_branch(self):
+        s = 'branch new-branch'
+        parser = self.parser
+        result = parser.parse(s)
+
+        self.assertEqual(1, len(result))
+        self.assertIsInstance(result[0], Branch,
+                              "branch should return a Branch instance")
+        self.assertEqual('new-branch', result[0].branch_name)
+
+    def test_parse_checkout(self):
+        s = 'checkout branch-name'
+        parser = self.parser
+        result = parser.parse(s)
+
+        self.assertEqual(1, len(result))
+        self.assertIsInstance(result[0], Checkout,
+                              "checkout should return a Checkout instance")
+        self.assertEqual('branch-name', result[0].branch_name)
+
     def test_parse_touch(self):
         parser = self.parser
         s = 'touch path/to/foo.txt'

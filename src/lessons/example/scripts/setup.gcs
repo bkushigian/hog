@@ -1,0 +1,30 @@
+touch main.py
+>> main.py "
+def main():
+    for i in range(100):
+        print('Hello world!')
+"
+add (main.py)
+commit "Created main.py"
+
+touch lib.py
+>> lib.py "
+def foo():
+    return 1
+
+def add(a,b):
+    return a + b
+"
+
+add (lib.py)
+commit "Created lib.py"
+
+touch blah.py
+
+>> blah.py "
+def blah():
+    print('blah')
+"
+
+add (blah.py)
+commit "Created blah.py"
