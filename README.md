@@ -5,6 +5,14 @@ directory updates as a repository evolves. A developer who uses Git on the daily
 should know some of the nitty gritty details about his or her tools and we aim
 to help them do just that.
 
+Our goal in making HOG is to help the Git user to learn enough to read (and
+understand!) the Git man pages. There are many introductory Git tools out there
+but we haven't seen any that focus on the backend of the Git repo. This
+knowledge is necessary for moving from an intermediate to an advanced Git user.
+Thus, rather than target new Git users we try to give a platform in which the
+user can freely experiment with Git and easily track what happens behind the
+scenes.
+
 ## The Basics
 
 Git is a difficult piece of software to learn and has developed quite the
